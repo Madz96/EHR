@@ -20,17 +20,25 @@ type EHR struct {
 	ID                string        `json:"id"`
 	Firstname         string        `json:"firstname"`
 	Lastname          string        `json:"lastname"`
-	SocialSecurityNum string        `json:"socialSecurityNum"`
+	ContactNo	  string        `json:"contactNum"`
+	Gender		  string	`json:"gender"`
 	Birthday          time.Time     `json:"birthday"`
-	Appointments      []Appointment `json:"visits"`
+	Address		  string	`json:"address"`
+	FileUploads       []f_uploads   `json:"fuploads"`
+	EhrUploads        []ehr_uploads `json:"ehruploads"`
 }
 
 // Appointment public for access outside the CC
-type Appointment struct {
-	DrID    string    `json:"drId"`
-	Date    time.Time `json:"date"`
-	Comment string    `json:"comment"`
+type f_uploads struct {
+	IPFS_fHash        string        `json:"ifhash"`
+	uploadedDate      time.Time     `json:"udate"`
+	fileInfo 	  string        `json:"finfo"`
 }
+
+type ehr_uploads struct {
+	ehrTID		  string	`json:"ehrtid"`
+	DiagnosisTime     time.Time	`json:"dtime"`
+	prescriptionInfo  string	`json:"pinfo"`
 
 // HeroesServiceChaincode implementation of Chaincode
 type HeroesServiceChaincode struct {
@@ -54,9 +62,12 @@ func (t *HeroesServiceChaincode) Init(stub shim.ChaincodeStubInterface) pb.Respo
 	ehr.ID = "ID"
 	ehr.Firstname = "firstname"
 	ehr.Lastname = "lastname"
-	ehr.SocialSecurityNum = "socialsecuritynumber"
+	ehr.ContactNo = "contactNum"
+	ehr.Gender = "gender"
 	ehr.Birthday = time.Now()
-	ehr.Appointments = nil
+	ehr.Address = "address"
+	ehr.FileUploads = nil
+	ehr.EhrUploads = nil
 
 	behr, err := json.Marshal(ehr)
 	if err != nil {
@@ -83,12 +94,16 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 
 	// Handle different functions
 	switch function {
+	case "getPatientDetails":
+		return getPatientDetails(stub, args)
+	case "viewPatientDetails":
+		return viewPatientDetails(stub, args)
+	case "updateFileUploads":
+		return updateFileUploads(stub, args)
 	case "createEHR":
 		return createEHR(stub, args)
 	case "getEHR":
 		return getEHR(stub, args)
-	case "updateEHR":
-		return updateEHR(stub, args)
 	}
 
 	// Check whether it is an invoke request
@@ -181,13 +196,13 @@ func (t *HeroesServiceChaincode) invoke(stub shim.ChaincodeStubInterface, args [
 }
 
 // ==========================================================================================
-//	createEHR- create a donor-recipient pair of health records
+//	getPatientDetails - Getting Patient Details
 // ==========================================================================================
-func createEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+func getPatientDetails(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var err error
-	fmt.Println("running the function createPair()")
+	fmt.Println("running the function getPatientDetais()")
 
-	if len(args) != 4 {
+	if len(args) != 6 {
 		return shim.Error("Wrong input")
 	}
 
@@ -196,9 +211,12 @@ func createEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	ehr.ID = ehrID
 	ehr.Firstname = args[0]
 	ehr.Lastname = args[1]
-	ehr.SocialSecurityNum = args[2]
-	ehr.Birthday, err = time.Parse(layout, args[3])
-	ehr.Appointments = nil
+	ehr.ContactNo = args[2]
+	ehr.Gender = args[3]
+	ehr.Birthday, err = time.Parse(layout, args[4])
+	ehr.Address = args[5]
+	ehr.FileUploads = nil
+	ehr.EhrUploads = nil
 
 	if err != nil {
 		return shim.Error("Error parsing birthday")
@@ -225,9 +243,9 @@ func createEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 }
 
 // ==========================================================================================
-// getEHR : query to get a EHR by its key
+// ViewPatientDetails : query to get patient details by its key
 // ==========================================================================================
-func getEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+func viewPatientDetails(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var ehrID string
 	var err error
 
@@ -240,22 +258,22 @@ func getEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 		fmt.Println(err.Error())
 		return shim.Error(err.Error())
 	} else if valAsbytes == nil {
-		fmt.Println("EHR does not exist")
-		return shim.Error("EHR does not exist")
+		fmt.Println("Patient details do not exist")
+		return shim.Error("Patient details do not exist")
 	}
 
 	return shim.Success(valAsbytes)
 }
 
 // ==========================================================================================
-// updateEHR : get a EHR by its key and add a Appointment (drId + date + comment)
+// updateFileUploads : 
 // ==========================================================================================
-func updateEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+func updateFileUploads(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var ehrID string
 	var err error
 	var ehr *EHR
 
-	if len(args) != 3 { // ehrID, DrID, comment
+	if len(args) != 3 { 
 		return shim.Error("Wrong input")
 	}
 	ehrID = args[0]
@@ -268,7 +286,7 @@ func updateEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 		fmt.Println("Error reading state : EHR is nil")
 		return shim.Error("nil ehr")
 	}
-	err = ehr.addAppointment(args[1], args[2])
+	err = ehr.addfileuploads(args[1], args[2])
 	if err != nil {
 		fmt.Println(err.Error())
 		return shim.Error(err.Error())
@@ -294,10 +312,60 @@ func updateEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	return shim.Success(jsonEHR)
 }
 
+
 // ==========================================================================================
-// add Appointment (date + comment) to EHR
+// createEHR: 
 // ==========================================================================================
-func (ehr *EHR) addAppointment(DrID string, comment string) error {
+func createEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var ehrID string
+	var err error
+	var ehr *EHR
+
+	if len(args) != 3 {
+		return shim.Error("wrong inout")
+	}
+	ehrID = args[0]
+	ehr, err = getEHRbyID(stub, ehrID)
+	if err != nil {
+		fmt.Println(err.Error())
+		return shim.Error(err.Error())
+	}
+	if ehr == nil {
+		fmt.Println("Error reading state : EHR is nil")
+		return shim.Error("nil ehr")
+	}
+	err = ehr.addehruploads(args[1], args[2])
+	if err != nil {
+		fmt.Println(err.Error())
+		return shim.Error(err.Error())
+	}
+
+	jsonEHR, err := json.Marshal(ehr)
+	if err != nil {
+		fmt.Println(err.Error())
+		return shim.Error("error marshalling json" + err.Error())
+	}
+
+	err = stub.PutState(ehrID, jsonEHR)
+	if err != nil {
+		return shim.Error("updateEHR() : Error put state")
+	}
+
+	// Notify listeners that an event "eventInvoke" has been executed
+	err = stub.SetEvent("eventInvoke", []byte{})
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success(jsonEHR)
+}
+
+
+
+// ==========================================================================================
+// addFileUploads :
+// ==========================================================================================
+func (ehr *EHR) addfileuploads( IPFS_fHash string, fileInfo string) error {
 
 	_now := time.Now()
 	yyyy := _now.Year()
@@ -306,9 +374,30 @@ func (ehr *EHR) addAppointment(DrID string, comment string) error {
 	hh := _now.Hour()
 	mm := _now.Minute()
 	_now = time.Date(yyyy, MM, dd, hh, mm, 0, 0, time.UTC)
-	ehr.Appointments = append(ehr.Appointments, Appointment{DrID, _now, comment})
+	ehr.FileUploads = append(ehr.FileUploads, f_uploads{IPFS_fHash, _now, fileInfo})
 	return nil
 }
+
+// ==========================================================================================
+// addFileUploads :
+// ==========================================================================================
+
+func (ehr *EHR) addehruploads(ehrTID string, prescriptionInfo string) error {
+
+	_now := time.Now()
+	yyyy := _now.Year()
+	MM := _now.Month()
+	dd := _now.Day()
+	hh := _now.Hour()
+	mm := _now.Minute()
+	_now = time.Date(yyyy, MM, dd, hh, mm, 0, 0, time.UTC)
+	ehr.EhrUploads = append(ehr.EhrUploads, ehr_uploads{ehrTID, _now, prescriptionInfo})
+	return nil
+}
+
+
+
+
 
 // ==========================================================================================
 // getEHRbyID : get the EHR object by ID - Auxiliary function
