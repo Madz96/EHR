@@ -17,6 +17,7 @@ func Serve(app *controllers.Application) {
 	http.HandleFunc("/createEHR.html", app.CreateEHRhandler)
 	http.HandleFunc("/getEHR.html", app.GetEHRhandler)
 	http.HandleFunc("/updateEHR.html", app.UpdateEHRhandler)
+	http.HandleFunc("/createPatient.html", app.CreatePatienthandler)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/createEHR.html", http.StatusTemporaryRedirect)

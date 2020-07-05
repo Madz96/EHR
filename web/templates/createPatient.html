@@ -1,0 +1,49 @@
+{{define "title"}}Patient Registration{{end}}
+
+{{define "body"}}
+<h1 style="padding-bottom: 10px;">Register Patient</h1>
+
+{{ if .Response }}
+{{ if .Success }}
+<div class="alert alert-success" role="alert">
+    Patient Registered Successfully! Patient ID: {{ .TransactionID }}
+</div>
+{{ else }}
+<div class="alert alert-danger" role="alert">
+    Oops! Something went wrong, please try again later.
+</div>
+{{ end }}
+{{ end }}
+
+<form class="form-inline" action="createPatient.html" method="post">
+    <div class="row" style="padding-bottom: 5px;">
+        <label for="firstName" class="col-lg-4">First Name</label>
+        <input type="text" class="form-control" id="firstName" name="firstName" class="col-lg-4"><br>
+    </div>
+
+    <div class="row" style="padding-bottom: 5px;">
+        <label for="lastName" class="col-lg-4">Last Name</label>
+        <input type="text" class="form-control" id="lastName" name="lastName" class="col-lg-4"><br>
+    </div>
+
+    <div class="row" style="padding-bottom: 5px;">
+        <label for="gender" class="col-lg-4">Gender</label>
+        <input class="form-check-input" type="radio" name="genderMale" id="gender" value="male">
+        <label class="form-check-label" style="padding-right: 5px;" for="genderMale">Male</label>
+        <input class="form-check-input" type="radio" name="genderFemale" id="gender" value="female">
+        <label class="form-check-label" for="genderFemale">Female</label><br>
+    </div>
+
+    <div class="row">
+        <label for="birthday" class="col-lg-4">Birthday</label>
+        <input type="text" class="form-control" id="birthday" name="birthday" class="col-lg-4"><br>
+    </div>
+    <br>
+
+    <input type="hidden" name="submitted" value="true">
+    <button type="submit" class="btn btn-default">Send the request</button>
+
+</form>
+<br>
+<a href="home.html">Back to Home</a>
+{{end}}
