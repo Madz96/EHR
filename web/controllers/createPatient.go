@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 )
 
@@ -20,12 +21,17 @@ func (app *Application) CreatePatienthandler(w http.ResponseWriter, r *http.Requ
 		contactNo := r.FormValue("contactNo")
 
 		txid, err := app.Fabric.CreatePatient(name, contactNo)
+		fmt.Println("txid", txid)
+		fmt.Println("txid err", err)
+
 		if err != nil {
 			http.Error(w, "Unable to invoke createPatient in the blockchain : "+err.Error(), 500)
 		}
 		data.TransactionID = txid
 		data.Success = true
 		data.Response = true
+
+		fmt.Println(txid)
 	}
 	renderTemplate(w, r, "createPatient.html", data)
 }
