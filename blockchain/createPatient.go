@@ -1,12 +1,11 @@
 package blockchain
 
 // CreatePatient : create Patient
-func (setup *FabricSetup) CreatePatient(firstName string, lastName string,
-	contactNo string, gender string, birthday string, address string) (string, error) {
+func (setup *FabricSetup) CreatePatient(name string, contactNo string) (string, error) {
 
 	// Prepare arguments
 	funcName := "createPatient"
-	args := []string{firstName, lastName, contactNo, gender, birthday, address}
+	args := []string{name, contactNo}
 
 	return setup.Invoke(funcName, args)
 }

@@ -2,6 +2,13 @@ package model
 
 import "time"
 
+// Patient : Patient Details
+type Patient struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	ContactNo string `json:"contactNo"`
+}
+
 // EHR : Electronic Health Record
 type EHR struct {
 	ID                string        `json:"id"`

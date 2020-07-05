@@ -16,14 +16,10 @@ func (app *Application) CreatePatienthandler(w http.ResponseWriter, r *http.Requ
 		Response:      false,
 	}
 	if r.FormValue("submitted") == "true" {
-		// firstName := r.FormValue("firstName")
-		// lastName := r.FormValue("lastName")
-		// gender := "gender"
-		// birthday := r.FormValue("birthday")
-		// address := r.FormValue("address")
-		// contactNo := r.FormValue("contactNo")
+		name := r.FormValue("name")
+		contactNo := r.FormValue("contactNo")
 
-		txid, err := app.Fabric.CreatePatient("firstName", "lastName", "contactNo", "gender", "2006-01-01", "address")
+		txid, err := app.Fabric.CreatePatient(name, contactNo)
 		if err != nil {
 			http.Error(w, "Unable to invoke createPatient in the blockchain : "+err.Error(), 500)
 		}
