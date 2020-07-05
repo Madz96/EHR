@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/noursaadallah/EHR/model"
+	"github.com/IMS+/EHR/model"
 )
 
 // GetEHR query the chaincode to get the state of ehrID

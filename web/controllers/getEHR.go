@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/noursaadallah/EHR/model"
+	"github.com/IMS+/EHR/model"
 )
 
 // GetEHRhandler : controller to get ehr

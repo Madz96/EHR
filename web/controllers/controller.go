@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/noursaadallah/EHR/blockchain"
+	"github.com/IMS+/EHR/blockchain"
 )
 
 // Application : uses FabricSetup to perform actions

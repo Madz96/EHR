@@ -148,9 +148,9 @@ The testing process can take some time depending on your network connection. Wha
 All you need to do now is to create a new directory in the `src` folder of your `GOPATH`, following this repository name.
 
 ```bash
-mkdir -p $GOPATH/src/github.com/noursaadallah && \
-cd $GOPATH/src/github.com/noursaadallah
-git clone https://github.com/noursaadallah/EHR.git
+mkdir -p $GOPATH/src/github.com/IMS+ && \
+cd $GOPATH/src/github.com/IMS+
+git clone https://github.com/IMS+/EHR.git
 cd EHR
 make
 ```

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/noursaadallah/EHR/web/controllers"
+	"github.com/IMS+/EHR/web/controllers"
 )
 
 // Serve : start the web app and server

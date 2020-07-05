@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/noursaadallah/EHR/blockchain"
-	"github.com/noursaadallah/EHR/web"
-	"github.com/noursaadallah/EHR/web/controllers"
+	"github.com/IMS+/EHR/blockchain"
+	"github.com/IMS+/EHR/web"
+	"github.com/IMS+/EHR/web/controllers"
 )
 
 func main() {
@@ -14,12 +14,12 @@ func main() {
 	fSetup := blockchain.FabricSetup{
 		// Channel parameters
 		ChannelID:     "chainhero",
-		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/noursaadallah/EHR/fixtures/artifacts/chainhero.channel.tx",
+		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/IMS+/EHR/fixtures/artifacts/chainhero.channel.tx",
 
 		// Chaincode parameters
 		ChainCodeID:     "heroes-service",
 		ChaincodeGoPath: os.Getenv("GOPATH"),
-		ChaincodePath:   "github.com/noursaadallah/EHR/chaincode/",
+		ChaincodePath:   "github.com/IMS+/EHR/chaincode/",
 		OrgAdmin:        "Admin",
 		OrgName:         "Org1",
 		ConfigFile:      "config.yaml",
