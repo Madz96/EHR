@@ -396,9 +396,6 @@ func (ehr *EHR) addehruploads(ehrTID string, prescriptionInfo string) error {
 }
 
 
-
-
-
 // ==========================================================================================
 // getEHRbyID : get the EHR object by ID - Auxiliary function
 // ==========================================================================================
